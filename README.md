@@ -8,7 +8,8 @@ I have only Proof of concepted this in my splunk enviroment, but should be revis
 
 Steps to use
 
-Install ElasticSearch Python module "pip install elasticsearch " i think (I'll update with more details)
+Install ElasticSearch https://github.com/elasticsearch/elasticsearch-py
+"pip install elasticsearch "
 
 In my POC copy the files in:
 
