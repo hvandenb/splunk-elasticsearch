@@ -7,6 +7,7 @@ import sys
  
 total = len(sys.argv)
 cmdargs = str(sys.argv)
+index="*";
 for i in xrange(total):
    opt = str (sys.argv[i]);
    if (  opt.startswith("index") ):
