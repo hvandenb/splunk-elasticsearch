@@ -20,5 +20,5 @@ and reload your splunk
 
 Now you should be able to do a simple search like 
 
-| es | search Event="*SOMETHING*" 
+| es | search *SOMETHING*" 
 
