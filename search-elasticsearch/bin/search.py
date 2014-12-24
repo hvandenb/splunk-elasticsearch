@@ -17,9 +17,25 @@ for i in xrange(total):
    
 pp = pprint.PrettyPrinter(indent=4)
 es = Elasticsearch()
-res = es.search(size=50, index=index, body={"query": {"match_all": {}} })
+res = es.search(size=50, index=index, body={
+      "query": {
+         "filtered" : {
+            "query": {
+               "match_all": {}
+            },
+            "filter" : {
+                "range" : {
+                    "@timestamp": {
+                        "gt" : "now-1w",
+                        "lt" : "now"
+                    }
+                }
+            }
+        }
+       } 
+   })
 print("\"_time\",\"_raw\",\"index\",\"type\"")
-#pp.pprint(res);
+pp.pprint(res);
 for hit in res['hits']['hits']:
    hit["_source"]["message"] = hit["_source"]["message"].replace('"',' ');
    epochTimestamp = hit['_source']['@timestamp'];
