@@ -8,6 +8,9 @@ import sys
 total = len(sys.argv)
 cmdargs = str(sys.argv)
 index="*";
+limit=100;
+oldestDate="now";
+earlietDate="now-1d";
 defaultField="message";
 for i in xrange(total):
    opt = str (sys.argv[i]);
@@ -16,11 +19,18 @@ for i in xrange(total):
    elif (  opt.startswith("query") ):
       query= str (sys.argv[i]).split("=")[1];
    elif (  opt.startswith("field") ):
-      defaultField= str (sys.argv[i]).split("=")[1];
+      startDate= str (sys.argv[i]).split("=")[1];
+   elif (  opt.startswith("oldest") ):
+      oldestDate= str (sys.argv[i]).split("=")[1];
+   elif (  opt.startswith("earl") ):
+      earliest= str (sys.argv[i]).split("=")[1];
+   elif (  opt.startswith("limit") ):
+      limit= str (sys.argv[i]).split("=")[1];
    
 pp = pprint.PrettyPrinter(indent=4)
 es = Elasticsearch()
 res = es.search(size=50, index=index, body={
+      "size": limit,
       "query": {
          "filtered" : {
             "query": {
@@ -29,8 +39,8 @@ res = es.search(size=50, index=index, body={
             "filter" : {
                 "range" : {
                     "@timestamp": {
-                        "gt" : "now-1w",
-                        "lt" : "now"
+                        "gt" : earlietDate,
+                        "lt" : oldestDate
                     }
                 }
             }
