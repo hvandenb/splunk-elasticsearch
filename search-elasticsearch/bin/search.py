@@ -5,6 +5,7 @@ import pprint
 import time
 import sys
 import io
+import csv
 
 total = len(sys.argv)
 cmdargs = str(sys.argv)
