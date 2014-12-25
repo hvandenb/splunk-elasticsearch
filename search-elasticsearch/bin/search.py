@@ -4,7 +4,8 @@ from elasticsearch import Elasticsearch
 import pprint
 import time
 import sys
- 
+import io
+
 total = len(sys.argv)
 cmdargs = str(sys.argv)
 index="*";
@@ -51,13 +52,11 @@ print("\"_time\",\"_raw\",\"index\",\"type\"")
 #pp.pprint(res);
 date_time = '2014-12-21T16:11:18.419Z'
 pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
-
-for hit in res['hits']['hits']:
-   hit["_source"][defaultField] = hit["_source"][defaultField].replace('"',' ');
-   epochTimestamp = hit['_source']['@timestamp'];
-   hit['_source']['_epoch'] = int(time.mktime(time.strptime(epochTimestamp, pattern)))
-   hit['_source']["_raw"]=hit['_source'][defaultField]
-   print("%(_epoch)s,\"%(_raw)s\"," % hit["_source"] + 
-         "\"%(_index)s\",\"%(_type)s\"" % hit
-         )
+output = io.StringIO()
+writer = csv.DictWriter(output)
+writer.writeheader()
+for stats in my_stats:
+    writer.writerow(res['hits']['hits'])
+csv_output = output.getvalue().encode('utf-8')
+print "%s" % csv_output
 #test development branch
