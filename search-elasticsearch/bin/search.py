@@ -48,14 +48,16 @@ res = es.search(size=50, index=index, body={
        } 
    })
 print("\"_time\",\"_raw\",\"index\",\"type\"")
-pp.pprint(res);
+#pp.pprint(res);
+date_time = '2014-12-21T16:11:18.419Z'
+pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
+
 for hit in res['hits']['hits']:
    hit["_source"][defaultField] = hit["_source"][defaultField].replace('"',' ');
    epochTimestamp = hit['_source']['@timestamp'];
-   date_time = '2014-12-21T16:11:18.419Z'
-   pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
    hit['_source']['_epoch'] = int(time.mktime(time.strptime(epochTimestamp, pattern)))
    hit['_source']["_raw"]=hit['_source'][defaultField]
    print("%(_epoch)s,\"%(_raw)s\"," % hit["_source"] + 
          "\"%(_index)s\",\"%(_type)s\"" % hit
          )
+#test
