@@ -12,17 +12,12 @@ Install python if it is not installed
 Install ElasticSearch https://github.com/elasticsearch/elasticsearch-py
 "pip install elasticsearch "
 
-<<<<<<< HEAD
-In my POC copy the files in:
+This project is now a Splunk Application so just copy the splunk-elasticsearch directory to your splunk $SPLUNK_HOME/etc/apps directory and should work
 
-the bin directory to $SPLUNK_HOME/etc/apps/search/bin
-the local directory to $SPLUNK_HOME/etc/apps/search/local 
 
-===============================================
-=======
+======================================================
 git clone "This Project"
 rsync -av splunk-elasticsearch $SPLUNK_HOME/etc/apps
->>>>>>> 7a1c3de14cfcdf8faf679216cb3bd7bce856ed60
 
 Now you should be able to do a simple search like 
 | esearch | top message
@@ -42,9 +37,4 @@ esearch
     query    = default ("*" | might change this to match_all)   the elasticsearch query_string
     
 
-
-<<<<<<< HEAD
-=======
-| esearch oldest=now-40d earliest=now limit=1000 index=nagios* | search *SOMETHING*" 
->>>>>>> 7a1c3de14cfcdf8faf679216cb3bd7bce856ed60
 
