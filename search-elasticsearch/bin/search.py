@@ -10,8 +10,9 @@ cmdargs = str(sys.argv)
 index="*";
 limit=100;
 oldestDate="now";
-earlietDate="now-1d";
+earliestDate="now-1d";
 defaultField="message";
+query="*";
 for i in xrange(total):
    opt = str (sys.argv[i]);
    if (  opt.startswith("index") ):
@@ -19,7 +20,7 @@ for i in xrange(total):
    elif (  opt.startswith("query") ):
       query= str (sys.argv[i]).split("=")[1];
    elif (  opt.startswith("field") ):
-      startDate= str (sys.argv[i]).split("=")[1];
+      defaulField= str (sys.argv[i]).split("=")[1];
    elif (  opt.startswith("oldest") ):
       oldestDate= str (sys.argv[i]).split("=")[1];
    elif (  opt.startswith("earl") ):
@@ -29,25 +30,30 @@ for i in xrange(total):
    
 pp = pprint.PrettyPrinter(indent=4)
 es = Elasticsearch()
-res = es.search(size=50, index=index, body={
+body = {
       "size": limit,
       "query": {
          "filtered" : {
             "query": {
-               "match_all": {}
+                  "query_string" : {
+                        "default_field" : defaultField,
+                        "query" : query
+                  }
             },
             "filter" : {
-                "range" : {
-                    "@timestamp": {
-                        "gt" : earlietDate,
-                        "lt" : oldestDate
-                    }
-                }
+                   "range" : {
+                       "@timestamp": {
+                           "lt" : earliestDate,
+                           "gt" : oldestDate
+                       }
+                   }
             }
         }
        } 
-   })
-print("\"_time\",\"_raw\",\"index\",\"type\"")
+   }
+#pp.pprint(body);
+res = es.search(size=50, index=index, body=body);
+print("\"_time\",\"_raw\",\"index\",\"type\"");
 #pp.pprint(res);
 date_time = '2014-12-21T16:11:18.419Z'
 pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
