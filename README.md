@@ -4,19 +4,25 @@ splunk-elasticsearch
 I have created a small search command for Splunk which will allow you to search Elastic Search and display the results in the Splunk GUI
 
 
-I have only Proof of concepted this in my splunk enviroment, but should be revising it shortly to be better.
+This project is now a valid splunk application and installs as you would any other splunk applications
 
 Steps to use
+Install python if it is not installed
 
 Install ElasticSearch https://github.com/elasticsearch/elasticsearch-py
 "pip install elasticsearch "
 
+<<<<<<< HEAD
 In my POC copy the files in:
 
 the bin directory to $SPLUNK_HOME/etc/apps/search/bin
 the local directory to $SPLUNK_HOME/etc/apps/search/local 
 
 ===============================================
+=======
+git clone "This Project"
+rsync -av splunk-elasticsearch $SPLUNK_HOME/etc/apps
+>>>>>>> 7a1c3de14cfcdf8faf679216cb3bd7bce856ed60
 
 Now you should be able to do a simple search like 
 | esearch | top message
@@ -37,4 +43,8 @@ esearch
     
 
 
+<<<<<<< HEAD
+=======
+| esearch oldest=now-40d earliest=now limit=1000 index=nagios* | search *SOMETHING*" 
+>>>>>>> 7a1c3de14cfcdf8faf679216cb3bd7bce856ed60
 
