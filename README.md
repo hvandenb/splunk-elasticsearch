@@ -1,12 +1,10 @@
 splunk-elasticsearch
 ====================
 
-I have created a small search command for Splunk which will allow you to search Elastic Search and display the results in the Splunk GUI
-
+I have created a search command for Splunk which will allow you to search Elastic Search and display the results in the Splunk GUI
 
 This project is now a valid splunk application and installs as you would any other splunk applications
-
-Steps to use<br>
+Steps<br>
 Install python if it is not installed
 
 Install ElasticSearch https://github.com/elasticsearch/elasticsearch-py<br>
