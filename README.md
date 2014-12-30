@@ -26,15 +26,15 @@ or
 | esearch oldest=now-100d earliest=now query="some text" index=nagios* limit=1000 field=message
 
 ================================================
-
-command reference:
-esearch
-    oldest = default (now-1d)   uses elasticsearch timedate value or function
-    earliest = default (now)    uses elasticsearch timedate value or function
-    index    = default (*)      sepecify the elasticsearch index to search
-    limit    = default (50)     number of records to return
-    field    = default ("message")  which elasticsearch field to query and return the value
-    query    = default ("*" | might change this to match_all)   the elasticsearch query_string
+<br>
+command reference:<br>
+esearch<br>
+    oldest = default (now-1d)   uses elasticsearch timedate value or function<br>
+    earliest = default (now)    uses elasticsearch timedate value or function<br>
+    index    = default (*)      sepecify the elasticsearch index to search<br>
+    limit    = default (50)     number of records to return<br>
+    field    = default ("message")  which elasticsearch field to query and return the value<br>
+    query    = default ("*" | might change this to match_all)   the elasticsearch query_string<br>
     
 
 
