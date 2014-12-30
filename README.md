@@ -6,24 +6,24 @@ I have created a small search command for Splunk which will allow you to search 
 
 This project is now a valid splunk application and installs as you would any other splunk applications
 
-Steps to use
+Steps to use<br>
 Install python if it is not installed
 
-Install ElasticSearch https://github.com/elasticsearch/elasticsearch-py
+Install ElasticSearch https://github.com/elasticsearch/elasticsearch-py<br>
 "pip install elasticsearch "
 
-This project is now a Splunk Application so just copy the splunk-elasticsearch directory to your splunk $SPLUNK_HOME/etc/apps directory and should work
+This project is now a Splunk Application so just copy the splunk-elasticsearch directory to your splunk $SPLUNK_HOME/etc/apps directory and should work<br>
 
 
 ======================================================
-git clone "This Project"
-rsync -av splunk-elasticsearch $SPLUNK_HOME/etc/apps
+git clone "This Project"<br>
+rsync -av splunk-elasticsearch $SPLUNK_HOME/etc/apps<br>
 
-Now you should be able to do a simple search like 
-| esearch | top message
-
-or 
-| esearch oldest=now-100d earliest=now query="some text" index=nagios* limit=1000 field=message
+Now you should be able to do a simple search like <br>
+| esearch | top message<br>
+<br>
+or <br>
+| esearch oldest=now-100d earliest=now query="some text" index=nagios* limit=1000 field=message<br>
 
 ================================================
 <br>
