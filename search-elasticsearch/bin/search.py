@@ -24,7 +24,7 @@ for i in xrange(total):
    elif (  opt.startswith("oldest") ):
       oldestDate= str (sys.argv[i]).split("=")[1];
    elif (  opt.startswith("earl") ):
-      earliest= str (sys.argv[i]).split("=")[1];
+      earliestDate= str (sys.argv[i]).split("=")[1];
    elif (  opt.startswith("limit") ):
       limit= str (sys.argv[i]).split("=")[1];
    
@@ -52,10 +52,10 @@ body = {
        } 
    }
 #pp.pprint(body);
-res = es.search(size=50, index=index, body=body);
+res = es.search(size=limit, index=index, body=body);
 print("\"_time\",\"_raw\",\"index\",\"type\"");
 #pp.pprint(res);
-date_time = '2014-12-21T16:11:18.419Z'
+#date_time = '2014-12-21T16:11:18.419Z'
 pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 for hit in res['hits']['hits']:
