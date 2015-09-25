@@ -15,36 +15,60 @@
 # under the License.
 
 
-# python essearch.py __EXECUTE__ 'location="New York"'
+# python essearch.py __EXECUTE__ 'q="New York"'
 
 from datetime import datetime
 from elasticsearch import Elasticsearch
-import pprint
-import time
-import sys
- 
+import os, sys, time, requests, oauth2, json, urllib
+
+(isgetinfo, sys.argv) = splunk.Intersplunk.isGetInfo(sys.argv)
+
 from splunklib.searchcommands import \
   dispatch, GeneratingCommand, Configuration, Option, validators
 
 @Configuration()
-class ElasticCommand(GeneratingCommand):
+class EsCommand(GeneratingCommand):
+  """ Generates events that are the result of a query against Elasticsearch
 
-  index = Option(require=False, default=*)
+  ##Syntax
 
-  q = Option(require=False)
+  .. code-block::
+      es index=<string> | q=<string> | fields=<string> | oldest=<string> | earl=<string> | limit=<int>
 
-  fields = Option(require=False, default="message")
+  ##Description
 
-  oldest = Option(require=False, default="now")
+  The :code:`es` issue a query to ElasticSearch, where the 
+  query is specified in :code:`q`.
 
-  earl = Option(require=False, default="now-1d")
+  ##Example
 
-  limit = Option(require=False, validate=validators.Integer(), default=100)
+  .. code-block::
+      | es oldest=now-100d earliest=now query="some text" index=nagios* limit=1000 field=message
+
+  This example generates events drawn from the result of the query 
+
+  """
+
+  index = Option(doc='', require=False, default="*")
+
+  q = Option(doc='', require=True)
+
+  fields = Option(doc='', require=False, default="message")
+
+  oldest = Option(doc='', require=False, default="now")
+
+  earl = Option(doc='', require=False, default="now-1d")
+
+  limit = Option(doc='', require=False, validate=validators.Integer(), default=100)
 
   def generate(self):
+
+    #self.logger.debug('SimulateCommand: %s' % self)  # log command line
+
     config = self.get_configuration()
  
-    pp = pprint.PrettyPrinter(indent=4)
+    #pp = pprint.PrettyPrinter(indent=4)
+    self.logger.debug('Setup ES')
     es = Elasticsearch()
     body = {
           "size": limit,
@@ -52,17 +76,8 @@ class ElasticCommand(GeneratingCommand):
              "filtered" : {
                 "query": {
                       "query_string" : {
-                            "default_field" : defaultField,
-                            "query" : query
+                            "query" : q
                       }
-                },
-                "filter" : {
-                       "range" : {
-                           "@timestamp": {
-                               "lt" : earliestDate,
-                               "gt" : oldestDate
-                           }
-                       }
                 }
             }
            } 
@@ -104,4 +119,7 @@ class ElasticCommand(GeneratingCommand):
     config_file = open(sourcePath + '/config.json')
     return json.load(config_file)
 
-dispatch(ElasticCommand, sys.argv, sys.stdin, sys.stdout, __name__)
+  def __init__(self):
+    super(GeneratingCommand, self).__init__()
+
+dispatch(EsCommand, sys.argv, sys.stdin, sys.stdout, __name__)
