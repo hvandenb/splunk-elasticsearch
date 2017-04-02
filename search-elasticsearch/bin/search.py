@@ -21,7 +21,7 @@ for i in xrange(total):
    elif (  opt.startswith("query") ):
       query= str (sys.argv[i]).split("=")[1]
    elif (  opt.startswith("field") ):
-      defaulField= str (sys.argv[i]).split("=")[1]
+      defaultField= str (sys.argv[i]).split("=")[1]
    elif (  opt.startswith("oldest") ):
       oldestDate= str (sys.argv[i]).split("=")[1]
    elif (  opt.startswith("earl") ):
