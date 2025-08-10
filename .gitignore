@@ -18,3 +18,5 @@ examples/*/local
 examples/*/metadata
 tests/searchcommands_data/log/
 tests/searchcommands_data/output/
+*.dist-info
+__pycache__

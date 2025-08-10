@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2011-2014 Splunk, Inc.
 #
@@ -14,112 +14,80 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
-# python essearch.py __EXECUTE__ 'q="New York"'
-
-from datetime import datetime
+import sys
+import time
+import json
 from elasticsearch import Elasticsearch
-import os, sys, time, requests, oauth2, json, urllib
-
-(isgetinfo, sys.argv) = splunk.Intersplunk.isGetInfo(sys.argv)
 
 from splunklib.searchcommands import \
-  dispatch, GeneratingCommand, Configuration, Option, validators
+    dispatch, GeneratingCommand, Configuration, Option, validators
 
 @Configuration()
 class EsCommand(GeneratingCommand):
-  """ Generates events that are the result of a query against Elasticsearch
+    """ Generates events that are the result of a query against Elasticsearch
 
-  ##Syntax
+    ##Syntax
 
-  .. code-block::
-      es index=<string> | q=<string> | fields=<string> | oldest=<string> | earl=<string> | limit=<int>
+    .. code-block::
+        es index=<string> | q=<string> | fields=<string> | oldest=<string> | earl=<string> | limit=<int>
 
-  ##Description
+    ##Description
 
-  The :code:`es` issue a query to ElasticSearch, where the 
-  query is specified in :code:`q`.
+    The :code:`es` issue a query to ElasticSearch, where the
+    query is specified in :code:`q`.
 
-  ##Example
+    ##Example
 
-  .. code-block::
-      | es oldest=now-100d earliest=now query="some text" index=nagios* limit=1000 field=message
+    .. code-block::
+        | es oldest=now-100d earliest=now query="some text" index=nagios* limit=1000 field=message
 
-  This example generates events drawn from the result of the query 
+    This example generates events drawn from the result of the query
 
-  """
+    """
 
-  index = Option(doc='', require=False, default="*")
+    index = Option(doc='', require=False, default="*")
+    q = Option(doc='', require=True)
+    fields = Option(doc='', require=False, default="message")
+    oldest = Option(doc='', require=False, default="now")
+    earl = Option(doc='', require=False, default="now-1d")
+    limit = Option(doc='', require=False, validate=validators.Integer(), default=100)
 
-  q = Option(doc='', require=True)
+    def generate(self):
+        self.logger.debug('Starting ES search command.')
 
-  fields = Option(doc='', require=False, default="message")
+        es = Elasticsearch()
 
-  oldest = Option(doc='', require=False, default="now")
-
-  earl = Option(doc='', require=False, default="now-1d")
-
-  limit = Option(doc='', require=False, validate=validators.Integer(), default=100)
-
-  def generate(self):
-
-    #self.logger.debug('SimulateCommand: %s' % self)  # log command line
-
-    config = self.get_configuration()
- 
-    #pp = pprint.PrettyPrinter(indent=4)
-    self.logger.debug('Setup ES')
-    es = Elasticsearch()
-    body = {
-          "size": limit,
-          "query": {
-             "filtered" : {
-                "query": {
-                      "query_string" : {
-                            "query" : q
-                      }
-                }
+        query = {
+            "query_string": {
+                "query": self.q
             }
-           } 
-       }
-    #pp.pprint(body);
-    res = es.search(size=50, index=index, body=body);
+        }
 
-    # if response.status_code != 200:
-    #   yield {'ERROR': results['error']['text']}
-    #   return
+        try:
+            res = es.search(
+                index=self.index,
+                query=query,
+                size=self.limit
+            )
 
+            for hit in res['hits']['hits']:
+                yield self.get_event(hit)
 
-    # date_time = '2014-12-21T16:11:18.419Z'
-    # pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
+        except Exception as e:
+            self.logger.error("Error during Elasticsearch search: %s", e)
+            # You might want to yield an error event to Splunk
+            yield {'_raw': f"Error during Elasticsearch search: {e}"}
 
-    for hit in res['hits']['hits']:
-      yield self.getEvent(hit)
+    def get_event(self, result):
+        event = {
+            '_time': time.time(),
+            '_index': result['_index'],
+            '_type': result.get('_type', ''), # _type is deprecated
+            '_id': result['_id'],
+            '_score': result['_score'],
+            '_raw': json.dumps(result)
+        }
+        return event
 
-  def getEvent(self, result):
-
-    # hit["_source"][defaultField] = hit["_source"][defaultField].replace('"',' ');
-    # epochTimestamp = hit['_source']['@timestamp'];
-    # hit['_source']['_epoch'] = int(time.mktime(time.strptime(epochTimestamp, pattern)))
-    # hit['_source']["_raw"]=hit['_source'][defaultField]
-
-    event = {'_time': time.time(), 
-             '_index': result['_index'], 
-             '_type': result['_type'], 
-             '_id': result['_id'],
-             '_score': result['_score']
-            }
-
-    event["_raw"] = json.dumps(result)
-
-    return event
-
-  def get_configuration(self):
-    sourcePath = os.path.dirname(os.path.abspath(__file__))
-    config_file = open(sourcePath + '/config.json')
-    return json.load(config_file)
-
-  def __init__(self):
-    super(GeneratingCommand, self).__init__()
-
-dispatch(EsCommand, sys.argv, sys.stdin, sys.stdout, __name__)
+if __name__ == "__main__":
+    dispatch(EsCommand, sys.argv, sys.stdin, sys.stdout, __name__)
